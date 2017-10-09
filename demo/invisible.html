@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>vaptcha-invisible</title>
+    <link rel="stylesheet" href="/demo/demo.css">
+</head>
+
+<body>
+    <div class="login">
+        <form class="login-form" method="post" autocomplete="off">
+            <h1 class="title">登录</h1>
+            <div class="form-group">
+                <input type="text" class="form-control" name="phone" value="" placeholder="请输入手机号">
+            </div>
+            <div class="form-group">
+                <input type="password" class="form-control" placeholder="请输入密码" name="password">
+            </div>
+            <button class="btn login-btn">登录</button>
+        </form>
+    </div>
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdn.vaptcha.com/v.js"></script>
+    <script>
+        var form = {
+            token: '',
+            challenge: '',
+            phone: '',
+            password: ''
+        }
+        var vaptcha_obj;        
+        $.get('/server/auth.php/getVaptcha', function (r) {
+            var options = {
+                vid: r.vid,//站点id ,string,必选,
+                challenge: r.challenge,//验证流水号 ,string,必选,
+                type: "invisible",//验证码类型,string,默认float,可选择float,popup,embed,
+                https: false,//是否是https , boolean,默认true,(false:http),
+                checkingAnimation:"display",//是否显示智能检测动画，"hide"则为隐藏
+                outage: '/server/auth.php/getDowTime',
+                success: function (token, challenge) {//当验证成功时执行回调,function,参数token为string,必选,
+                    //提交表单时将token，challenge一并提交，作为验证通过的凭证，服务端进行二次验证
+                    form.token = token;
+                    form.challenge = challenge;
+                    form.phone = $('input[name=phone]').val();
+                    form.password = $('input[name=password]').val();
+                    $.post('/server/auth.php/login', form, function(data){
+                        alert(data.msg)
+                    });
+                },
+                fail: function () {//验证失败时执行回调  
+                    //todo:执行人机验证失败后的事情
+                }
+            }
+            //vaptcha对象
+            window.vaptcha(options, function (obj) {
+                vaptcha_obj = obj;
+                //执行初始化
+            });
+        }, 'json')
+
+        $('.login-btn').click(function(e){
+            e.preventDefault();
+            vaptcha_obj && vaptcha_obj.validate();
+        })
+    </script>
+</body>
+
+</html>
