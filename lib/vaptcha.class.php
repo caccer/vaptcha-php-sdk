@@ -3,14 +3,6 @@ require_once dirname(__FILE__).'/config.php';
 
 class Vaptcha
 {
-    const VERSION = '1.0.0';
-    const SDK_LANG = 'php';
-    const API_URL = 'http://api.vaptcha.com';
-    const GET_CHALLENGE_URL = '/challenge';
-    const VALIDATE_URL = '/validate';
-    const REQUEST_UESD_UP = '0209';
-    //宕机模式检查频率185000ms
-    const DOWNTIME_CHECK_TIME = 185000;
     private $_vid;
     private $_key;
     private $_publicKey;
@@ -35,22 +27,28 @@ class Vaptcha
      */
     public function GetChallenge($sceneId = "") 
     {
-        $url = self::API_URL.self::GET_CHALLENGE_URL;
+        $url = API_URL.GET_CHALLENGE_URL;
         $now = time() * 1000;
         $query = "id=$this->_vid&scene=$sceneId&time=$now";
         $signature = $this->HMACSHA1($this->_key, $query);
         if ($this->_isDown)
         {
             $challenge = self::ReadContentFormGet("$url?$query&signature=$signature");
-            if(!$challenge || $challenge === self::REQUEST_UESD_UP)
+            if($challenge === REQUEST_UESD_UP)
             {
                 $this->_lastCheckDownTime = $now;
                 $this->_isDown = true;
                 self::$_passedSignatures = array();
-                if ($this->_publicKey = null)
-                    $this->_publicKey = $this->GetPubclicKey();
                 return $this->GetDownTimeCaptcha();
             }
+            if(!$challenge) {
+                if($this->GetIsDwon()) {
+                    $this->_lastCheckDownTime = $now;
+                    $this->_isDown = true;
+                    self::$_passedSignatures = array();
+                }
+                return $this->GetDownTimeCaptcha();
+            } 
             return json_encode(array(
                 "vid" =>  $this->_vid,
                 "challenge" => $challenge
@@ -58,11 +56,11 @@ class Vaptcha
         }
         else
         {
-        if($now - $this->_lastCheckDownTime > self::DOWNTIME_CHECK_TIME) 
+        if($now - $this->_lastCheckDownTime > DOWNTIME_CHECK_TIME) 
             {
                 $this->_lastCheckDownTime = $now;
                 $challenge = self::ReadContentFormGet("$url?$query&signature=$signature");
-                if($challenge || $challenge !== self::REQUEST_UESD_UP)
+                if($challenge || $challenge !== REQUEST_UESD_UP)
                 {
                     $this->_isDown = false;
                     self::$_passedSignatures = array();
@@ -95,6 +93,11 @@ class Vaptcha
     private function GetPublicKey()
     {
         return self::ReadContentFormGet(PUBLIC_KEY_PATH);
+    }
+
+    private function GetIsDwon()
+    {
+        return self::ReadContentFormGet(IS_DOWN_PATH);
     }
 
     public function DownTime($data)
@@ -179,7 +182,7 @@ class Vaptcha
     {
         if(!$token || !$challenge || $token != md5($this->_key.'vaptcha'.$challenge))
             return false;
-        $url = self::API_URL.self::VALIDATE_URL;
+        $url = API_URL.VALIDATE_URL;
         $now = time() * 1000;
         $query = "id=$this->_vid&scene=$sceneId&token=$token&time=$now";
         $signature = $this->HMACSHA1($this->_key, $query);
@@ -227,6 +230,8 @@ class Vaptcha
         $md5 = md5($time.$this->_key);
         $captcha = substr($md5, 0, 3);
         $verificationKey = substr($md5,30);
+        if ($this->_publicKey == null)
+            $this->_publicKey = $this->GetPubclicKey();
         $url = md5($captcha.$verificationKey.$this->_publicKey).PIC_POST_FIX;
         $url = DOWN_TIME_PATH.$url;
         return json_encode(array(

@@ -1,11 +1,11 @@
 # Vaptcha Sdk for PHP
 
-#### Step1.环境准备
+### Step1.环境准备
 
 - Vaptcha SDK PHP版本适用于  php5.2及以上版本，且需要开启`curl`。
 - 要使用Vaptcha SDK，您需要一个Vaptcha账号、一个验证单元以及一对VID和Key。请在Vaptcha验证管理后台查看。
 
-#### Step2.SDK 获取和安装
+### Step2.SDK 获取和安装
 
 - 使用命令从Github获取:
 
@@ -25,7 +25,7 @@
 
 - 运行demo
 
-  若在`localhost`下查看demo，须在验证管理中添加一个domain为`localhost`的对应验证单元，
+  若在`127.0.0.1`下查看demo，须在验证管理中添加一个domain为`127.0.0.1`的对应验证单元，
 
   并在`/server/auth.php`中配置`$vid`与`$key`。
 
@@ -37,7 +37,7 @@
 
   打开[http://127.0.0.1:8080/demo](http://127.0.0.1:8080/demo)即可访问
 
-#### Step3.SDK接口
+### Step3.SDK接口
 
 使用接口前需先实例化`Vaptcha`
 
@@ -80,7 +80,7 @@ SDK提供以下三个接口：
   $v->Validate($_POST['challenge'], $_POST['token'], $_POST['sceneId'])
   ```
 
-####  Step4. 代码示例
+###  Step4. 代码示例
 
 文件名: auth.php
 
