@@ -11,8 +11,8 @@ class Validate
      * 实例化vaptcha
      */
     public function __construct(){
-        $vid = 'xxxxxxxxxxxxxxx';
-        $key = 'xxxxxxxxxxxxxxx';
+        $vid = '59c4668157f5a21430878707';
+        $key = 'd53ee616bc924485a6240f1db03590a7';
         $this->vaptcha = new Vaptcha($vid, $key);
     }
 
@@ -34,7 +34,7 @@ class Validate
      */
     public function getDowTime(){
         $data = $_GET['data']; // 客户端sdk以get方式发送数据
-        return $this->vpatcha->DownTime();
+        return $this->vpatcha->DownTime($data);
     }
 
     /**

@@ -13,7 +13,7 @@
   git clone https://github.com/VaptchaTeam/vaptcha-php-sdk.git
   ```
 
-  [github下载地址](https://github.com)手动下载获取。
+  [github下载地址](https://github.com/VaptchaTeam/vaptcha-php-sdk)手动下载获取。
 
 - 将sdk文件引入程序中并初始化即可
 
@@ -74,7 +74,7 @@ SDK提供以下三个接口：
 
   `$sceneId`： 选填，默认为所有场景(此参数为后台配置的验证单元场景)
 
-  example
+  example:
 
   ```php
   $v->Validate($_POST['challenge'], $_POST['token'], $_POST['sceneId'])

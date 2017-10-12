@@ -31,7 +31,7 @@ class Vaptcha
         $now = time() * 1000;
         $query = "id=$this->_vid&scene=$sceneId&time=$now";
         $signature = $this->HMACSHA1($this->_key, $query);
-        if ($this->_isDown)
+        if (!$this->_isDown)
         {
             $challenge = self::ReadContentFormGet("$url?$query&signature=$signature");
             if($challenge === REQUEST_UESD_UP)
@@ -60,7 +60,7 @@ class Vaptcha
             {
                 $this->_lastCheckDownTime = $now;
                 $challenge = self::ReadContentFormGet("$url?$query&signature=$signature");
-                if($challenge || $challenge !== REQUEST_UESD_UP)
+                if($challenge && $challenge != REQUEST_UESD_UP)
                 {
                     $this->_isDown = false;
                     self::$_passedSignatures = array();
@@ -97,13 +97,13 @@ class Vaptcha
 
     private function GetIsDwon()
     {
-        return self::ReadContentFormGet(IS_DOWN_PATH);
+        return !!self::ReadContentFormGet(IS_DOWN_PATH) == 'true';
     }
 
     public function DownTime($data)
     {
         if(!$data)
-            return json_encode(array("error" => "parms error"));
+            return json_encode(array("error" => "params error"));
         if(!$this->_publicKey)
             $this->_publicKey = $this->GetPublicKey();
         $datas = explode(',', $data);
@@ -113,18 +113,18 @@ class Vaptcha
                 return $this->GetDownTimeCaptcha();
             case 'getsignature':
                 if(count($datas) < 2)
-                    return json_encode(array("error" => "parms error"));
+                    return json_encode(array("error" => "params error"));
                 else
                 {
                     $time = (int)$datas[1];
                     if((bool)$time)
                         return $this->GetSignature($time);
                     else 
-                        return json_encode(array("error" => "parms error"));
+                        return json_encode(array("error" => "params error"));
                 }
             case 'check':
                 if(count($datas) < 5)
-                    return json_encode(array("error" => "parms error"));
+                    return json_encode(array("error" => "params error"));
                 else 
                 {
                     $time1 = (int)$datas[1];
