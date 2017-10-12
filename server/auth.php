@@ -3,7 +3,7 @@
 require_once dirname(dirname(__FILE__)).'/lib/vaptcha.class.php';
 require_once dirname(__FILE__).'/Response.class.php';
 
-class Validate
+class Validatephp
 {
     private $vaptcha;
 
@@ -11,8 +11,8 @@ class Validate
      * 实例化vaptcha
      */
     public function __construct(){
-        $vid = '59c4668157f5a21430878707';
-        $key = 'd53ee616bc924485a6240f1db03590a7';
+        $vid = 'xxxxxxxxxxxxx';
+        $key = 'xxxxxxxxxxxxx';
         $this->vaptcha = new Vaptcha($vid, $key);
     }
 
