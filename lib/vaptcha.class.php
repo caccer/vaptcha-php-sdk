@@ -230,8 +230,6 @@ class Vaptcha
         $md5 = md5($time.$this->_key);
         $captcha = substr($md5, 0, 3);
         $verificationKey = substr($md5,30);
-        if ($this->_publicKey == null)
-            $this->_publicKey = $this->GetPubclicKey();
         $url = md5($captcha.$verificationKey.$this->_publicKey).PIC_POST_FIX;
         $url = DOWN_TIME_PATH.$url;
         return json_encode(array(

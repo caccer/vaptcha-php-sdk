@@ -3,7 +3,7 @@
 require_once dirname(dirname(__FILE__)).'/lib/vaptcha.class.php';
 require_once dirname(__FILE__).'/Response.class.php';
 
-class Validatephp
+class Validate
 {
     private $vaptcha;
 
@@ -22,6 +22,7 @@ class Validatephp
      * @return json
      */
     public function getVaptcha(){
+        return '{"challenge":"","vid":""}';
         $challenge = $this->vaptcha->GetChallenge();
         return $challenge;
     }
@@ -34,7 +35,7 @@ class Validatephp
      */
     public function getDowTime(){
         $data = $_GET['data']; // 客户端sdk以get方式发送数据
-        return $this->vpatcha->DownTime($data);
+        return $this->vaptcha->DownTime($data);
     }
 
     /**
