@@ -23,7 +23,7 @@ class Validate
      * @return json
      */
     public function getVaptcha(){
-        $challenge = $this->vaptcha->GetChallenge();
+        $challenge = $this->vaptcha->getChallenge();
         return $challenge;
     }
 
@@ -35,7 +35,7 @@ class Validate
      */
     public function getDowTime(){
         $data = $_GET['data']; // 客户端sdk以get方式发送数据
-        return $this->vaptcha->DownTime($data);
+        return $this->vaptcha->downTime($data);
     }
 
     /**
@@ -45,7 +45,7 @@ class Validate
      */
     public function login(){
         $request = $_POST; // 获取表单数据 
-        $validatePass = $this->vaptcha->Validate($request['challenge'], $request['token']);
+        $validatePass = $this->vaptcha->validate($request['challenge'], $request['token']);
         if ($validatePass) {
             // 验证通过接下来验证表单或者进行登录等其他操作
             //:TODO

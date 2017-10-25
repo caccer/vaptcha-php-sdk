@@ -62,24 +62,24 @@ $v = new Vaptcha($vid, $key); // 实例化sdk，$vid 和 $key 为验证单元中
 
 SDK提供以下三个接口：
 
-- 获取流水号接口 `GetChallenge()`
+- 获取流水号接口 `getChallenge()`
 
   example:
 
   ```php
-  return $v->GetVaptcha(); //返回json字符串
+  return $v->getVaptcha(); //返回json字符串
   ```
 
-- 宕机模式接口 `DownTime($data)`
+- 宕机模式接口 `downTime($data)`
 
   example:
 
   ```php
   $data = $_GET['data'];
-  return $v->DownTime($data);
+  return $v->downTime($data);
   ```
 
-- 二次验证接口 `Validate($challenge, $token[, $sceneId])`
+- 二次验证接口 `validate($challenge, $token[, $sceneId])`
 
   参数说明: 
 
@@ -92,5 +92,5 @@ SDK提供以下三个接口：
   example:
 
   ```php
-  $v->Validate($_POST['challenge'], $_POST['token'], $_POST['sceneId'])
+  $v->validate($_POST['challenge'], $_POST['token'], $_POST['sceneId'])
   ```
