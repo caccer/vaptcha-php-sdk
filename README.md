@@ -46,7 +46,7 @@
   进入sdk路径，在运行如下命令 ：
 
   ```shell
-  composer require
+  composer install
   php -S 127.0.0.1:8080
   ```
 
