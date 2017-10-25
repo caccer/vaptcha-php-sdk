@@ -2,7 +2,7 @@
 
 ### Step1.环境准备
 
-- Vaptcha SDK PHP版本适用于  php5.2及以上版本，且需要开启`curl`。
+- Vaptcha SDK PHP版本适用于  php5.3及以上版本，且需要开启`curl`。
 - 要使用Vaptcha SDK，您需要一个Vaptcha账号、一个验证单元以及一对VID和Key。请在Vaptcha验证管理后台查看。
 
 ### Step2.SDK 获取和安装
@@ -15,13 +15,27 @@
 
   [github下载地址](https://github.com/vaptcha/vaptcha-php-sdk)手动下载获取。
 
-- 将sdk文件引入程序中并初始化即可
+- 推荐使用composer
 
-  example
+  > composer 是php的包管理工具， 通过composer.json里的配置管理依赖的包，同时可以在使用类时自动加载对应的包, 在你的composer.json中添加如下依赖
+
+  执行
+
+  ```shell
+  composer require Vaptcha/vaptcha-sdk;
+  ```
+
+  使用 Composer 的 autoload 引入
 
   ```php
-  require_once dirname(__FILE__) . '/lib/vaptcha.class.php';
+  require_once('vendor/autoload.php');
+
+  use Vaptcha\Vaptcha;
+
+  $vaptcha = new Vaptcha($vid, $key);
   ```
+
+  ​
 
 - 运行demo
 
@@ -32,6 +46,7 @@
   进入sdk路径，在运行如下命令 ：
 
   ```shell
+  composer require
   php -S 127.0.0.1:8080
   ```
 

@@ -1,5 +1,4 @@
 <?php 
-
 define("VALIDATE_PASS_TIME", 600000);
 define("REQUEST_ABATE_TIME", 250000);
 define("VALIDATE_WAIT_TIME", 2000);

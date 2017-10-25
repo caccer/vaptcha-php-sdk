@@ -1,22 +1,23 @@
 <?php
-require_once dirname(__FILE__).'/config.php';
+namespace Vaptcha;
+require_once  dirname(__FILE__).'/config.php';
 
 class Vaptcha
 {
-    private $_vid;
-    private $_key;
-    private $_publicKey;
-    private $_lastCheckDownTime = 0;
-    private $_isDown = false;
+    private $vid;
+    private $key;
+    private $publicKey;
+    private $lastCheckdownTime = 0;
+    private $isDown = false;
 
     //宕机模式通过签证
-    private static $_passedSignatures;
+    private static $passedSignatures;
 
     public function __construct($vid, $key)
     {
         date_default_timezone_set("UTC");
-        $this->_vid = $vid;
-        $this->_key = $key;
+        $this->vid = $vid;
+        $this->key = $key;
     }
 
     /**
@@ -25,47 +26,42 @@ class Vaptcha
      * @param string $sceneId 场景id
      * @return void
      */
-    public function GetChallenge($sceneId = "") 
+    public function getChallenge($sceneId = "") 
     {
         $url = API_URL.GET_CHALLENGE_URL;
         $now = time() * 1000;
-        $query = "id=$this->_vid&scene=$sceneId&time=$now&version=".VERSION.'&sdklang='.SDK_LANG;
-        $signature = $this->HMACSHA1($this->_key, $query);
-        if (!$this->_isDown)
+        $query = "id=$this->vid&scene=$sceneId&time=$now&version=".VERSION.'&sdklang='.SDK_LANG;
+        $signature = $this->HMACSHA1($this->key, $query);
+        if (!$this->isDown)
         {
-            $challenge = self::ReadContentFormGet("$url?$query&signature=$signature");
-            if($challenge === REQUEST_UESD_UP)
-            {
-                $this->_lastCheckDownTime = $now;
-                $this->_isDown = true;
-                self::$_passedSignatures = array();
-                return $this->GetDownTimeCaptcha();
+            $challenge = self::readContentFormGet("$url?$query&signature=$signature");
+            if ($challenge === REQUEST_UESD_UP) {
+                $this->lastCheckdownTime = $now;
+                $this->isDown = true;
+                self::$passedSignatures = array();
+                return $this->getdownTimeCaptcha();
             }
-            if(!$challenge) {
-                if($this->GetIsDwon()) {
-                    $this->_lastCheckDownTime = $now;
-                    $this->_isDown = true;
-                    self::$_passedSignatures = array();
+            if (!$challenge) {
+                if ($this->getIsDwon()) {
+                    $this->lastCheckdownTime = $now;
+                    $this->isDown = true;
+                    self::$passedSignatures = array();
                 }
-                return $this->GetDownTimeCaptcha();
+                return $this->getdownTimeCaptcha();
             } 
             return json_encode(array(
-                "vid" =>  $this->_vid,
+                "vid" =>  $this->vid,
                 "challenge" => $challenge
             ));
-        }
-        else
-        {
-        if($now - $this->_lastCheckDownTime > DOWNTIME_CHECK_TIME) 
-            {
-                $this->_lastCheckDownTime = $now;
-                $challenge = self::ReadContentFormGet("$url?$query&signature=$signature");
-                if($challenge && $challenge != REQUEST_UESD_UP)
-                {
-                    $this->_isDown = false;
-                    self::$_passedSignatures = array();
+        } else {
+        if ($now - $this->lastCheckdownTime > downTime_CHECK_TIME) {
+                $this->lastCheckdownTime = $now;
+                $challenge = self::readContentFormGet("$url?$query&signature=$signature");
+                if ($challenge && $challenge != REQUEST_UESD_UP){
+                    $this->isDown = false;
+                    self::$passedSignatures = array();
                     return json_encode(array(
-                        "vid" =>  $this->_vid,
+                        "vid" =>  $this->vid,
                         "challenge" => $challenge
                     ));
                 }
@@ -82,57 +78,54 @@ class Vaptcha
      * @param string $sceneId 场景ID 不填则为默认场景
      * @return void
      */
-    public function Validate($challenge, $token, $sceneId = "")
+    public function validate($challenge, $token, $sceneId = "")
     {
-        if ($this->_isDown)
-            return $this->DownTimeValidate($token);
+        if ($this->isDown)
+            return $this->downTimeValidate($token);
         else
-            return $this->NormalValidate($challenge, $token, $sceneId);
+            return $this->normalValidate($challenge, $token, $sceneId);
     }
 
-    private function GetPublicKey()
+    private function getPublicKey()
     {
-        return self::ReadContentFormGet(PUBLIC_KEY_PATH);
+        return self::readContentFormGet(PUBLICkey_PATH);
     }
 
-    private function GetIsDwon()
+    private function getIsDwon()
     {
-        return !!self::ReadContentFormGet(IS_DOWN_PATH) == 'true';
+        return !!self::readContentFormGet(IS_DOWN_PATH) == 'true';
     }
 
-    public function DownTime($data)
+    public function downTime($data)
     {
-        if(!$data)
+        if (!$data)
             return json_encode(array("error" => "params error"));
-        if(!$this->_publicKey)
-            $this->_publicKey = $this->GetPublicKey();
+        if (!$this->publicKey)
+            $this->publicKey = $this->getPublicKey();
         $datas = explode(',', $data);
-        switch($datas[0])
-        {
+        switch($datas[0]) {
             case 'request': 
-                return $this->GetDownTimeCaptcha();
-            case 'getsignature':
-                if(count($datas) < 2)
+                return $this->getdownTimeCaptcha();
+            case 'getSignature':
+                if (count($datas) < 2)
                     return json_encode(array("error" => "params error"));
-                else
-                {
+                else {
                     $time = (int)$datas[1];
-                    if((bool)$time)
-                        return $this->GetSignature($time);
+                    if ((bool)$time)
+                        return $this->getSignature($time);
                     else 
                         return json_encode(array("error" => "params error"));
                 }
             case 'check':
-                if(count($datas) < 5)
+                if (count($datas) < 5)
                     return json_encode(array("error" => "params error"));
-                else 
-                {
+                else {
                     $time1 = (int)$datas[1];
                     $time2 = (int)$datas[2];
                     $signature = $datas[3];
                     $captcha = $datas[4];
-                    if((bool)$time1 && (bool)$time2)
-                        return $this->DownTimeCheck($time1, $time2, $signature, $captcha);
+                    if ((bool)$time1 && (bool)$time2)
+                        return $this->downTimeCheck($time1, $time2, $signature, $captcha);
                     return json_encode(array("error" => "parms error"));
                 }
             default: 
@@ -140,12 +133,12 @@ class Vaptcha
         }
     }
 
-    private function GetSignature($time)
+    private function getSignature($time)
     {
         $now = time() * 1000;
         if (($now - $time) > REQUEST_ABATE_TIME)
             return null;
-        $signature = md5($now.$this->_key);
+        $signature = md5($now.$this->key);
         return json_encode(array(
             'time' => $now,
             'signature' => $signature
@@ -161,76 +154,71 @@ class Vaptcha
      * @param [string] $captcha
      * @return void
      */
-    private function DownTimeCheck($time1, $time2, $signature, $captcha)
+    private function downTimeCheck($time1, $time2, $signature, $captcha)
     {
         $now = time() * 1000;
         if ($now - $time1 > REQUEST_ABATE_TIME || 
-            $signature != md5($time2.$this->_key) || 
+            $signature != md5($time2.$this->key) || 
             $now - $time2 < VALIDATE_WAIT_TIME)
             return json_encode(array("result" => "false"));
-        $trueCaptcha = substr(md5($time1.$this->_key), 0, 3);
+        $trueCaptcha = substr(md5($time1.$this->key), 0, 3);
         if ($trueCaptcha == strtolower($captcha)) 
             return json_encode(array(
                 "result" => "false",
-                'token' => $now.md5($now.$this->_key.'vaptcha')
+                'token' => $now.md5($now.$this->key.'vaptcha')
             ));
         else 
             return json_encode(array("result" => "false"));        
     }
 
-    private function NormalValidate($challenge, $token, $sceneId)
+    private function normalValidate($challenge, $token, $sceneId)
     {
-        if(!$token || !$challenge || $token != md5($this->_key.'vaptcha'.$challenge))
+        if (!$token || !$challenge || $token != md5($this->key.'vaptcha'.$challenge))
             return false;
         $url = API_URL.VALIDATE_URL;
         $now = time() * 1000;
-        $query = "id=$this->_vid&scene=$sceneId&token=$token&time=$now&version=".VERSION.'&sdklang='.SDK_LANG;
-        $signature = $this->HMACSHA1($this->_key, $query);
-        $response = self::PostValidate($url, "$query&signature=$signature");
+        $query = "id=$this->vid&scene=$sceneId&token=$token&time=$now&version=".VERSION.'&sdklang='.SDK_LANG;
+        $signature = $this->HMACSHA1($this->key, $query);
+        $response = self::postValidate($url, "$query&signature=$signature");
         return 'success' == $response;
     }
 
-    private function DownTimeValidate($token)
+    private function downTimeValidate($token)
     {
         $strs = explode(',', $token);
-        if(count($strs) < 2) 
+        if (count($strs) < 2) 
             return false;
-        else 
-        {
+        else {
             $time = (int)$strs[0];
             $signature = $strs[1];
             $now = time() * 1000;
             if ($now - $time > VALIDATE_PASS_TIME)
                 return false;
-            else
-            {
-                $signatureTrue = md5($time.$this->_key.'vaptcha');
-                if ($sigantureTrue)
-                {
-                    if (in_array($signature, self::$_passedSignatures))
+            else {
+                $signatureTrue = md5($time.$this->key.'vaptcha');
+                if ($sigantureTrue) {
+                    if (in_array($signature, self::$passedSignatures))
                         return false;
-                    else
-                    {
-                        array_push(self::$_passedSignatures, $signature);
-                        $length = count(self::$_passedSignatures);
+                    else {
+                        array_push(self::$passedSignatures, $signature);
+                        $length = count(self::$passedSignatures);
                         if ($length > MAX_LENGTH)
-                            array_splice(self::$_passedSignatures, 0, $length - MAX_LENGTH + 1);
+                            array_splice(self::$passedSignatures, 0, $length - MAX_LENGTH + 1);
                         return true;
                     }
-                }
-                else 
+                } else 
                     return false;
             }
         }
     }
 
-    private function GetDownTimeCaptcha()
+    private function getdownTimeCaptcha()
     {
         $time = time() * 1000;
-        $md5 = md5($time.$this->_key);
+        $md5 = md5($time.$this->key);
         $captcha = substr($md5, 0, 3);
         $verificationKey = substr($md5,30);
-        $url = md5($captcha.$verificationKey.$this->_publicKey).PIC_POST_FIX;
+        $url = md5($captcha.$verificationKey.$this->publicKey).PIC_POST_FIX;
         $url = DOWN_TIME_PATH.$url;
         return json_encode(array(
             "time" => $time,
@@ -238,7 +226,7 @@ class Vaptcha
         ));
     }
 
-    private static function PostValidate($url, $data)
+    private static function postValidate($url, $data)
     {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);  
@@ -254,7 +242,7 @@ class Vaptcha
         return $response;
     }
 
-    private static function ReadContentFormGet($url)
+    private static function readContentFormGet($url)
     {
         $ch = curl_init();  
         curl_setopt($ch, CURLOPT_URL, $url); 

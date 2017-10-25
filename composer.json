@@ -1,0 +1,21 @@
+{
+    "name": "vaptcha/vaptcha-sdk",
+    "description": "vaptcha sdk for php",
+    "keywords": ["vaptcha", "sdk"],
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "vaptcha",
+            "email": "vaptcha@wlinno.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Vaptcha\\": "src/"
+        }
+    }
+}
