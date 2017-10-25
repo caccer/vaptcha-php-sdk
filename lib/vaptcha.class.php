@@ -29,7 +29,7 @@ class Vaptcha
     {
         $url = API_URL.GET_CHALLENGE_URL;
         $now = time() * 1000;
-        $query = "id=$this->_vid&scene=$sceneId&time=$now";
+        $query = "id=$this->_vid&scene=$sceneId&time=$now&version=".VERSION.'&sdklang='.SDK_LANG;
         $signature = $this->HMACSHA1($this->_key, $query);
         if (!$this->_isDown)
         {
@@ -184,7 +184,7 @@ class Vaptcha
             return false;
         $url = API_URL.VALIDATE_URL;
         $now = time() * 1000;
-        $query = "id=$this->_vid&scene=$sceneId&token=$token&time=$now";
+        $query = "id=$this->_vid&scene=$sceneId&token=$token&time=$now&version=".VERSION.'&sdklang='.SDK_LANG;
         $signature = $this->HMACSHA1($this->_key, $query);
         $response = self::PostValidate($url, "$query&signature=$signature");
         return 'success' == $response;

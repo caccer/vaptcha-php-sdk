@@ -10,10 +10,10 @@
 - 使用命令从Github获取:
 
   ```shell
-  git clone https://github.com/VaptchaTeam/vaptcha-php-sdk.git
+  git clone https://github.com/vaptcha/vaptcha-php-sdk.git
   ```
 
-  [github下载地址](https://github.com/VaptchaTeam/vaptcha-php-sdk)手动下载获取。
+  [github下载地址](https://github.com/vaptcha/vaptcha-php-sdk)手动下载获取。
 
 - 将sdk文件引入程序中并初始化即可
 

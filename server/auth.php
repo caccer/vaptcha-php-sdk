@@ -11,8 +11,8 @@ class Validate
      * 实例化vaptcha
      */
     public function __construct(){
-        $vid = 'xxxxxxxxxxxxx';
-        $key = 'xxxxxxxxxxxxx';
+        $vid = '59c4668157f5a21430878707';
+        $key = 'd53ee616bc924485a6240f1db03590a7';
         $this->vaptcha = new Vaptcha($vid, $key);
     }
 
@@ -22,7 +22,6 @@ class Validate
      * @return json
      */
     public function getVaptcha(){
-        return '{"challenge":"","vid":""}';
         $challenge = $this->vaptcha->GetChallenge();
         return $challenge;
     }
