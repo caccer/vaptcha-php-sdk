@@ -11,7 +11,7 @@ class Vaptcha
     private $isDown = false;
 
     //宕机模式通过签证
-    private static $passedSignatures;
+    private static $passedSignatures = array();
 
     public function __construct($vid, $key)
     {
@@ -39,7 +39,7 @@ class Vaptcha
                 $this->lastCheckdownTime = $now;
                 $this->isDown = true;
                 self::$passedSignatures = array();
-                return $this->getdownTimeCaptcha();
+                return $this->getDownTimeCaptcha();
             }
             if (!$challenge) {
                 if ($this->getIsDwon()) {
@@ -47,7 +47,7 @@ class Vaptcha
                     $this->isDown = true;
                     self::$passedSignatures = array();
                 }
-                return $this->getdownTimeCaptcha();
+                return $this->getDownTimeCaptcha();
             } 
             return json_encode(array(
                 "vid" =>  $this->vid,
@@ -80,7 +80,7 @@ class Vaptcha
      */
     public function validate($challenge, $token, $sceneId = "")
     {
-        if ($this->isDown)
+        if ($this->isDown || !$challenge)
             return $this->downTimeValidate($token);
         else
             return $this->normalValidate($challenge, $token, $sceneId);
@@ -88,7 +88,7 @@ class Vaptcha
 
     private function getPublicKey()
     {
-        return self::readContentFormGet(PUBLICkey_PATH);
+        return self::readContentFormGet(PUBLIC_KEY_PATH);
     }
 
     private function getIsDwon()
@@ -100,13 +100,11 @@ class Vaptcha
     {
         if (!$data)
             return json_encode(array("error" => "params error"));
-        if (!$this->publicKey)
-            $this->publicKey = $this->getPublicKey();
         $datas = explode(',', $data);
         switch($datas[0]) {
             case 'request': 
-                return $this->getdownTimeCaptcha();
-            case 'getSignature':
+                return $this->getDownTimeCaptcha();
+            case 'getsignature':
                 if (count($datas) < 2)
                     return json_encode(array("error" => "params error"));
                 else {
@@ -160,15 +158,15 @@ class Vaptcha
         if ($now - $time1 > REQUEST_ABATE_TIME || 
             $signature != md5($time2.$this->key) || 
             $now - $time2 < VALIDATE_WAIT_TIME)
-            return json_encode(array("result" => "false"));
+            return json_encode(array("result" => false));
         $trueCaptcha = substr(md5($time1.$this->key), 0, 3);
         if ($trueCaptcha == strtolower($captcha)) 
             return json_encode(array(
-                "result" => "false",
-                'token' => $now.md5($now.$this->key.'vaptcha')
+                "result" => true,
+                'token' => $now.','.md5($now.$this->key.'vaptcha')
             ));
         else 
-            return json_encode(array("result" => "false"));        
+            return json_encode(array("result" => false));        
     }
 
     private function normalValidate($challenge, $token, $sceneId)
@@ -207,17 +205,19 @@ class Vaptcha
                         return true;
                     }
                 } else 
-                    return false;
+                    return true;
             }
         }
     }
 
-    private function getdownTimeCaptcha()
+    private function getDownTimeCaptcha()
     {
         $time = time() * 1000;
         $md5 = md5($time.$this->key);
         $captcha = substr($md5, 0, 3);
         $verificationKey = substr($md5,30);
+        if (!$this->publicKey)
+            $this->publicKey = $this->getPublicKey();
         $url = md5($captcha.$verificationKey.$this->publicKey).PIC_POST_FIX;
         $url = DOWN_TIME_PATH.$url;
         return json_encode(array(
