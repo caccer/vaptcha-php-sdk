@@ -69,7 +69,7 @@
         $('.login-btn').click(function(e){
             e.preventDefault();
             
-            if (!form.token || !form.challenge) {
+            if (!form.token) {
                 alert('请进行人机验证');
                 return false;
             }
