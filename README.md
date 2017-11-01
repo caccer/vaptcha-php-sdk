@@ -35,22 +35,16 @@
   $vaptcha = new Vaptcha($vid, $key);
   ```
 
-  ​
-
 - 运行demo
 
-  若在`127.0.0.1`下查看demo，须在验证管理中添加一个domain为`127.0.0.1`的对应验证单元，
-
-  并在`/server/auth.php`中配置`$vid`与`$key`。
-
-  进入sdk路径，在运行如下命令 ：
-
   ```shell
+  git clone https://github.com/vaptcha/vaptcha-php-sdk.git
+  cd vaptcha-php-sdk
   composer install
-  php -S 127.0.0.1:8080
+  php -S 127.0.0.1:4396
   ```
 
-  打开[http://127.0.0.1:8080/demo](http://127.0.0.1:8080/demo)即可访问
+  打开[http://127.0.0.1:4396/demo](http://127.0.0.1:4396/demo)即可访问
 
 ### Step3.SDK接口
 

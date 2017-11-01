@@ -12,8 +12,8 @@ class Validate
      * 实例化vaptcha
      */
     public function __construct(){
-        $vid = '';
-        $key = '';
+        $vid = '59f81632a485d5214ce59045';
+        $key = 'fb119a233f5b4514b79a5752ee3b20ae';
         $this->vaptcha = new Vaptcha($vid, $key);
     }
 

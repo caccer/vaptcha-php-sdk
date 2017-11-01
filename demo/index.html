@@ -34,88 +34,6 @@
             background: #323232;
             color: #fff;
         }
-        
-        .demo {
-            display: none;
-            position: fixed;
-            top: 0;
-            right: 0;
-            left: 0;
-            bottom: 0;
-            padding: 100px 300px;
-            background: rgba(0, 0, 0, .5);
-        }
-
-        .demo #iframe,
-        .demo .loading {
-            display: none;
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: #fff;
-            text-align: center;
-            box-sizing: border-box;
-        }
-        .demo .loading {
-            display: block;
-            padding-top: 20%;
-        }
-
-        @keyframes bounceDelay {
-            0%,
-            80%,
-            to {
-                transform: scale(0)
-            }
-            40% {
-                transform: scale(1)
-            }
-        }
-
-        .loading span {
-            width: 10px;
-            height: 10px;
-            background-color: #347eff;
-            border-radius: 50%;
-            display: inline-block;
-            animation: bounceDelay 1s infinite ease-in-out;
-            animation-fill-mode: both;
-            margin-left: 4px;
-        }
-
-        .demo .container {
-            position: relative;
-            width: 100%;
-            height: 100%;
-        }
-
-        .demo .header {
-            padding: 5px;
-            background: #eaeaea;
-            border-top-left-radius: 5px;
-            border-top-right-radius: 5px;
-            font-size: 0;
-        }
-
-        .demo .header .dot {
-            display: inline-block;
-            width: 14px;
-            height: 14px;
-            border-radius: 7px;
-            margin-right: 10px;
-        }
-
-        .dot.red {
-            background: #ff6565;
-        }
-
-        .dot.green {
-            background: #08b908;
-        }
-
-        .dot.orange {
-            background: #fdb632;
-        }
     </style>
 </head>
 
@@ -123,46 +41,11 @@
     <div>
         <h2>Vaptcha Demo</h2>
         <div class="menu">
-            <a target="iframe" href="/demo/float.html">浮动式</a>
-            <a target="iframe" href="/demo/embed.html">嵌入式</a>
-            <a target="iframe" href="/demo/invisible.html">隐藏式</a>
-        </div>
-        <div class="demo">
-            <div class="header">
-                <span class="dot red close"></span>
-                <span class="dot orange"></span>
-                <span class="dot green"></span>
-            </div>
-            <div class="container">
-                <div class="loading">
-                    <span style="animation-delay: -.32s"></span>
-                    <span style="animation-delay: -.16s"></span>
-                    <span></span>
-                </div>
-                <iframe name="iframe" src="/demo/invisible.html" frameborder="0" id="iframe"></iframe>
-            </div>
-        </div>
+            <a href="/demo/float.html">浮动式</a>
+            <a href="/demo/embed.html">嵌入式</a>
+            <a href="/demo/invisible.html">隐藏式</a>
+        </div> 
     </div>
-    <script>
-        var demo = document.getElementsByClassName('demo')[0],
-            menu = document.getElementsByClassName('menu')[0],
-            loading = document.getElementsByClassName('loading')[0],
-            iframe = document.getElementById('iframe'),
-            close = document.getElementsByClassName('close')[0];
-        menu.addEventListener('click', function (e) {
-            demo.style.display = 'block';
-            loading.style.display = 'block';
-            iframe.style.display = 'none';
-            setTimeout(function () {
-                iframe.style.display = 'block';
-                loading.style.display = 'none';
-            }, 1000);
-        })
-        demo.addEventListener('click', function (e) {
-            e.target === demo && (demo.style.display = 'none');
-            e.target === close && (demo.style.display = 'none');
-        })
-    </script>
 </body>
 
 </html>
